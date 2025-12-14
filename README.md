@@ -1,6 +1,6 @@
 # Agricultural Market Price Prediction
 
-A production-ready ML pipeline for predicting agricultural market prices using time-series data.
+A production-ready ML pipeline for predicting agricultural market prices using time-series data, developed in collaboration with the National Production Council of Costa Rica (CNP) and the University of Costa Rica (UCR).
 
 ## Project Structure
 
