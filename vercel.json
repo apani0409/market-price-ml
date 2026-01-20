@@ -1,8 +1,6 @@
 {
   "buildCommand": "pip install -r requirements.txt",
-  "framework": "streamlit",
-  "public": false,
-  "regions": ["sfo1"],
+  "outputDirectory": "./",
   "env": {
     "STREAMLIT_SERVER_HEADLESS": "true",
     "STREAMLIT_SERVER_PORT": "8501",
