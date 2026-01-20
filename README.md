@@ -1,8 +1,8 @@
-# 🍌 Análisis de Precios Agrícolas - CNP
+# Análisis de Precios Agrícolas - CNP
 
 > **Un análisis visual e interactivo de 4 años de datos históricos (2021-2024) del Consejo Nacional de Producción.**
 
-## 🎯 Acerca de Este Proyecto
+## Acerca de Este Proyecto
 
 Este dashboard presenta un **análisis transparente y riguroso de los precios agrícolas** registrados por el CNP entre 2021 y 2024. Explora patrones reales, estacionalidad y anomalías en 9,184 registros de 56 productos diferentes.
 
@@ -11,20 +11,20 @@ Este dashboard presenta un **análisis transparente y riguroso de los precios ag
 ✅ **Análisis Interactivo** - Filtros dinámicos para explorar subcategorías  
 ✅ **Datos Reales** - Directamente del Consejo Nacional de Producción  
 
-## 🚀 Características
+##  Características
 
-### 📊 Panel Principal
+### Panel Principal
 - **Gráfica de Serie Temporal** interactiva (2021-2024)
 - **Filtros dinámicos**: productos, fechas
 - **Tabla de estadísticas** por producto (media, mediana, mín, máx, desv. est.)
 
-### 💾 Funcionalidades
+### Funcionalidades
 - Descarga de datos filtrados a CSV
 - Visualización interactiva con Plotly
 - Estadísticas detalladas por producto
 - Acceso a datos crudos
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ```
 Frontend:       Streamlit 1.52.1
@@ -47,7 +47,7 @@ streamlit run src/dashboard.py
 # Visit → http://localhost:8501
 ```
 
-## 📁 Estructura
+## Estructura
 
 ```
 market-price-ml/
@@ -59,7 +59,7 @@ market-price-ml/
 └── README.md
 ```
 
-## 📊 Dataset
+## Dataset
 
 **Fuente:** Consejo Nacional de Producción (CNP) - Costa Rica
 
@@ -71,14 +71,3 @@ market-price-ml/
 | `unit` | Unidad de medida |
 
 **Cobertura**: 2021-2024 | **Registros**: 9,184 | **Productos**: 56
-
-## 🚀 Despliegue en Vercel
-
-```bash
-git push origin main
-# → vercel.com → Connect GitHub → Auto deploy
-```
-
----
-
-**Happy analyzing!** 📊✨
