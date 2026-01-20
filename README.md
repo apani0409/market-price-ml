@@ -1,141 +1,84 @@
-# Agricultural Market Price Prediction
+# 🍌 Análisis de Precios Agrícolas - CNP
 
-A production-ready ML pipeline for predicting agricultural market prices using time-series data, developed in collaboration with the National Production Council of Costa Rica (CNP) and the University of Costa Rica (UCR).
+> **Un análisis visual e interactivo de 4 años de datos históricos (2021-2024) del Consejo Nacional de Producción.**
 
-## Project Structure
+## 🎯 Acerca de Este Proyecto
+
+Este dashboard presenta un **análisis transparente y riguroso de los precios agrícolas** registrados por el CNP entre 2021 y 2024. Explora patrones reales, estacionalidad y anomalías en 9,184 registros de 56 productos diferentes.
+
+✅ **Datos del CNP** - 9,184 registros históricos de 56 productos agrícolas  
+✅ **Transparencia Total** - Visualización honesta sin predicciones especulativas  
+✅ **Análisis Interactivo** - Filtros dinámicos para explorar subcategorías  
+✅ **Datos Reales** - Directamente del Consejo Nacional de Producción  
+
+## 🚀 Características
+
+### 📊 Panel Principal
+- **Gráfica de Serie Temporal** interactiva (2021-2024)
+- **Filtros dinámicos**: productos, fechas
+- **Tabla de estadísticas** por producto (media, mediana, mín, máx, desv. est.)
+
+### 💾 Funcionalidades
+- Descarga de datos filtrados a CSV
+- Visualización interactiva con Plotly
+- Estadísticas detalladas por producto
+- Acceso a datos crudos
+
+## 🛠️ Tech Stack
 
 ```
-src/
-├── __init__.py              # Package initialization
-├── data_loader.py          # CSV loading and parsing
-├── preprocessing.py        # Data cleaning and aggregation
-├── features.py             # Feature engineering
-├── model.py                # Model training and evaluation
-└── train.py                # Main orchestration
-
-data/
-└── raw_prices.csv          # Input agricultural price data
+Frontend:       Streamlit 1.52.1
+Visualization:  Plotly (Express)
+Data:           Pandas, NumPy
+Language:       Python 3.12.3
+Dataset:        9,184 registros | 56 productos | 2021-2024
 ```
 
-## Pipeline Overview
-
-The complete ML pipeline consists of 5 modular stages:
-
-### 1. **Data Loading** (`data_loader.py`)
-- Reads CSV file with proper dtype specification
-- Parses `publication_date` as datetime
-- Returns cleaned DataFrame
-
-### 2. **Preprocessing** (`preprocessing.py`)
-- **Clean**: Drops rows with missing `price` or `variety`
-- **Filter**: Keeps only `unit == "kg"`
-- **Aggregate**: Groups by `(variety, year, week)` and calculates:
-  - `mean_price`: Average price per product-week
-  - `price_std`: Price volatility
-
-### 3. **Feature Engineering** (`features.py`)
-Creates time-based features for each product:
-- **Temporal**: `week_of_year` from `publication_date`
-- **Rolling Mean** (4-week window): `rolling_mean_price`
-- **Rolling Std** (4-week window): `rolling_std_price`
-
-### 4. **Model Training** (`model.py`)
-- **Time-aware split**: Chronological train/test split (no shuffling)
-- **Models**: RandomForest or LinearRegression
-- **Features**: `year`, `week`, `week_of_year`, `rolling_mean_price`, `rolling_std_price`
-- **Target**: `mean_price`
-- **Metrics**: MAE and RMSE
-
-### 5. **Orchestration** (`train.py`)
-- Integrates all modules
-- Configurable model type and parameters
-- Comprehensive logging
-- Sample prediction output
-
-## Usage
-
-### Install Dependencies
+## ⚡ Quick Start
 
 ```bash
+# Setup
+python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
+
+# Run
+streamlit run src/dashboard.py
+
+# Visit → http://localhost:8501
 ```
 
-### Run Training Pipeline
+## 📁 Estructura
+
+```
+market-price-ml/
+├── src/
+│   └── dashboard.py         # App principal
+├── data/
+│   └── raw_prices.csv       # Dataset CNP
+├── requirements.txt
+└── README.md
+```
+
+## 📊 Dataset
+
+**Fuente:** Consejo Nacional de Producción (CNP) - Costa Rica
+
+| Campo | Descripción |
+|-------|------------|
+| `publication_date` | Fecha (YYYY-MM-DD) |
+| `variety` | Producto agrícola |
+| `price` | Precio en ₡ |
+| `unit` | Unidad de medida |
+
+**Cobertura**: 2021-2024 | **Registros**: 9,184 | **Productos**: 56
+
+## 🚀 Despliegue en Vercel
 
 ```bash
-python -m src.train
+git push origin main
+# → vercel.com → Connect GitHub → Auto deploy
 ```
 
-### Use in Code
+---
 
-```python
-from src.data_loader import load_data
-from src.preprocessing import preprocess_pipeline
-from src.features import feature_engineering_pipeline
-from src.model import train_and_evaluate
-
-# Load and process data
-df = load_data()
-df = preprocess_pipeline(df)
-df = feature_engineering_pipeline(df, rolling_window=4)
-
-# Train model
-model, eval_results, test_df = train_and_evaluate(
-    df,
-    model_type='random_forest',
-    test_size=0.2
-)
-
-# Access results
-print(f"MAE: {eval_results['mae']}")
-print(f"RMSE: {eval_results['rmse']}")
-```
-
-## Dataset Columns
-
-Input CSV columns:
-- `year` (int): Year of observation
-- `week` (int): Week number
-- `publication_date` (date): Publication date
-- `NOMBRE` (str): Product name
-- `variety` (str): Product identifier
-- `quality` (str, optional): Quality grade
-- `size` (str, optional): Size category
-- `sale_format` (str, optional): Sale format
-- `unit` (str): Unit (kg, u, etc.)
-- `price` (float): Price value (target)
-
-## Key Design Principles
-
-✅ **Modularity**: Each file has a single responsibility
-✅ **Readability**: Clear function names, docstrings, and type hints
-✅ **Production-Ready**: Proper error handling, logging, and documentation
-✅ **Reproducibility**: Time-aware splitting prevents data leakage
-✅ **Extensibility**: Easy to add new models or features
-✅ **No Notebook Code**: Everything is in reusable modules
-
-## Model Performance
-
-The pipeline evaluates using:
-- **MAE** (Mean Absolute Error): Average prediction error in absolute price units
-- **RMSE** (Root Mean Squared Error): Penalizes larger errors more heavily
-
-## Configuration
-
-Modify parameters in `train.py`:
-
-```python
-main(
-    model_type='random_forest',  # or 'linear_regression'
-    test_size=0.2,              # 20% test set
-    rolling_window=4            # 4-week rolling window
-)
-```
-
-## Next Steps
-
-- Add cross-validation for more robust evaluation
-- Implement feature importance analysis
-- Add hyperparameter tuning
-- Save/load trained models
-- Create unit tests
+**Happy analyzing!** 📊✨
