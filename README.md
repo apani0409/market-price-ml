@@ -6,10 +6,10 @@
 
 Este dashboard presenta un **análisis transparente y riguroso de los precios agrícolas** registrados por el CNP entre 2021 y 2024. Explora patrones reales, estacionalidad y anomalías en 9,184 registros de 56 productos diferentes.
 
-✅ **Datos del CNP** - 9,184 registros históricos de 56 productos agrícolas  
-✅ **Transparencia Total** - Visualización honesta sin predicciones especulativas  
-✅ **Análisis Interactivo** - Filtros dinámicos para explorar subcategorías  
-✅ **Datos Reales** - Directamente del Consejo Nacional de Producción  
+ **Datos del CNP** - 9,184 registros históricos de 56 productos agrícolas  
+ **Transparencia Total** - Visualización honesta sin predicciones especulativas  
+ **Análisis Interactivo** - Filtros dinámicos para explorar subcategorías  
+ **Datos Reales** - Directamente del Consejo Nacional de Producción  
 
 ##  Características
 
@@ -34,7 +34,7 @@ Language:       Python 3.12.3
 Dataset:        9,184 registros | 56 productos | 2021-2024
 ```
 
-## ⚡ Quick Start
+## Quick Start
 
 ```bash
 # Setup
