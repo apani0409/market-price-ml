@@ -1,0 +1,9 @@
+{
+  "name": "market-price-ml",
+  "version": "1.0.0",
+  "description": "Agricultural price analysis dashboard",
+  "private": true,
+  "engines": {
+    "node": "18"
+  }
+}
