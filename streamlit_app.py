@@ -8,6 +8,9 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
+import numpy as np
+from scipy import stats
+
 
 # Configuración de la página
 st.set_page_config(
@@ -181,6 +184,109 @@ try:
                 file_name=f"precios_agricolas_{datetime.now().strftime('%Y%m%d')}.csv",
                 mime="text/csv"
             )
+
+        # ============ DETECCIÓN DE ANOMALÍAS ============
+        if productos_seleccionados:
+            st.markdown("---")
+            st.subheader("🔴 Detección de Anomalías (Z-Score)")
+            
+            # Calcular anomalías por producto
+            anomalies_data = []
+            
+            for producto in productos_seleccionados:
+                df_producto = df_filtered[df_filtered['variety'] == producto].copy()
+                
+                if len(df_producto) > 3:  # Necesitamos al menos 4 puntos
+                    prices = df_producto['price'].values
+                    z_scores = np.abs(stats.zscore(prices))
+                    
+                    # Anomalías con z-score > 2.5
+                    anomaly_indices = np.where(z_scores > 2.5)[0]
+                    
+                    if len(anomaly_indices) > 0:
+                        for idx in anomaly_indices:
+                            anomalies_data.append({
+                                'Producto': producto,
+                                'Fecha': df_producto.iloc[idx]['publication_date'].strftime('%Y-%m-%d'),
+                                'Precio': f"₡{df_producto.iloc[idx]['price']:,.0f}",
+                                'Z-Score': f"{z_scores[idx]:.2f}"
+                            })
+            
+            if anomalies_data:
+                df_anomalies = pd.DataFrame(anomalies_data)
+                st.warning(f"⚠️ Se encontraron {len(df_anomalies)} anomalías en los precios")
+                st.dataframe(df_anomalies, use_container_width=True)
+            else:
+                st.success("✅ No se detectaron anomalías significativas")
+
+        # ============ ANÁLISIS DE ESTACIONALIDAD ============
+        if productos_seleccionados and len(df_filtered) > 30:
+            st.markdown("---")
+            st.subheader("📅 Análisis de Estacionalidad")
+            
+            # Agregar mes y año
+            df_seasonal = df_filtered.copy()
+            df_seasonal['mes'] = df_seasonal['publication_date'].dt.month
+            df_seasonal['mes_nombre'] = df_seasonal['publication_date'].dt.strftime('%B')
+            
+            # Calcular precio promedio por mes
+            seasonal_avg = df_seasonal.groupby(['mes', 'mes_nombre'])['price'].agg(['mean', 'std', 'count']).reset_index()
+            seasonal_avg = seasonal_avg.sort_values('mes')
+            
+            # Gráfico de estacionalidad
+            fig_seasonal = px.bar(
+                seasonal_avg,
+                x='mes_nombre',
+                y='mean',
+                error_y='std',
+                title='Precio Promedio por Mes',
+                labels={
+                    'mean': 'Precio Promedio (₡)',
+                    'mes_nombre': 'Mes'
+                },
+                height=400
+            )
+            
+            fig_seasonal.update_xaxes(tickangle=45)
+            st.plotly_chart(fig_seasonal, use_container_width=True)
+            
+            # Tabla de estacionalidad
+            col1, col2 = st.columns(2)
+            with col1:
+                st.write("**Estadísticas por Mes:**")
+                seasonal_display = seasonal_avg.copy()
+                seasonal_display['mean'] = seasonal_display['mean'].apply(lambda x: f"₡{x:,.0f}")
+                seasonal_display['std'] = seasonal_display['std'].apply(lambda x: f"₡{x:,.0f}")
+                seasonal_display['count'] = seasonal_display['count'].astype(int)
+                seasonal_display = seasonal_display[['mes_nombre', 'mean', 'std', 'count']]
+                seasonal_display.columns = ['Mes', 'Promedio', 'Desv. Est.', 'Registros']
+                st.dataframe(seasonal_display, use_container_width=True, hide_index=True)
+
+        # ============ VOLATILIDAD ============
+        if productos_seleccionados:
+            st.markdown("---")
+            st.subheader("📊 Volatilidad de Precios")
+            
+            volatility_data = []
+            for producto in productos_seleccionados:
+                df_producto = df_filtered[df_filtered['variety'] == producto].copy()
+                
+                if len(df_producto) > 1:
+                    volatility = df_producto['price'].std()
+                    mean_price = df_producto['price'].mean()
+                    cv = (volatility / mean_price * 100) if mean_price > 0 else 0
+                    
+                    volatility_data.append({
+                        'Producto': producto,
+                        'Precio Promedio': f"₡{mean_price:,.0f}",
+                        'Desv. Estándar': f"₡{volatility:,.0f}",
+                        'Coef. Variación': f"{cv:.1f}%",
+                        'Rango': f"₡{df_producto['price'].min():,.0f} - ₡{df_producto['price'].max():,.0f}"
+                    })
+            
+            if volatility_data:
+                df_volatility = pd.DataFrame(volatility_data)
+                st.dataframe(df_volatility, use_container_width=True, hide_index=True)
 
 except FileNotFoundError:
     st.error("❌ No se encontró el archivo de datos 'data/raw_prices.csv'")
