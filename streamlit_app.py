@@ -187,7 +187,7 @@ try:
         # ============ ANÁLISIS DE ESTACIONALIDAD ============
         if productos_seleccionados and len(df_filtered) > 30:
             st.markdown("---")
-            st.subheader("📅 Análisis de Estacionalidad")
+            st.subheader("📅 Análisis de Estacionalidad - Meses Más Baratos y Caros")
             
             # Agregar mes y año
             df_seasonal = df_filtered.copy()
@@ -197,6 +197,36 @@ try:
             # Calcular precio promedio por mes
             seasonal_avg = df_seasonal.groupby(['mes', 'mes_nombre'])['price'].agg(['mean', 'std', 'count']).reset_index()
             seasonal_avg = seasonal_avg.sort_values('mes')
+            
+            # Encontrar mes más barato y más caro
+            mes_barato_idx = seasonal_avg['mean'].idxmin()
+            mes_caro_idx = seasonal_avg['mean'].idxmax()
+            
+            mes_barato = seasonal_avg.loc[mes_barato_idx]
+            mes_caro = seasonal_avg.loc[mes_caro_idx]
+            
+            diferencia_porcentaje = ((mes_caro['mean'] - mes_barato['mean']) / mes_barato['mean']) * 100
+            
+            # Mostrar resumen destacado
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric(
+                    "🟢 Mes Más Barato",
+                    mes_barato['mes_nombre'],
+                    f"₡{mes_barato['mean']:,.0f}"
+                )
+            with col2:
+                st.metric(
+                    "🔴 Mes Más Caro",
+                    mes_caro['mes_nombre'],
+                    f"₡{mes_caro['mean']:,.0f}"
+                )
+            with col3:
+                st.metric(
+                    "📊 Diferencia",
+                    f"{diferencia_porcentaje:.1f}%",
+                    f"₡{mes_caro['mean'] - mes_barato['mean']:,.0f}"
+                )
             
             # Gráfico de estacionalidad
             fig_seasonal = px.bar(
@@ -215,17 +245,15 @@ try:
             fig_seasonal.update_xaxes(tickangle=45)
             st.plotly_chart(fig_seasonal, use_container_width=True)
             
-            # Tabla de estacionalidad
-            col1, col2 = st.columns(2)
-            with col1:
-                st.write("**Estadísticas por Mes:**")
-                seasonal_display = seasonal_avg.copy()
-                seasonal_display['mean'] = seasonal_display['mean'].apply(lambda x: f"₡{x:,.0f}")
-                seasonal_display['std'] = seasonal_display['std'].apply(lambda x: f"₡{x:,.0f}")
-                seasonal_display['count'] = seasonal_display['count'].astype(int)
-                seasonal_display = seasonal_display[['mes_nombre', 'mean', 'std', 'count']]
-                seasonal_display.columns = ['Mes', 'Promedio', 'Desv. Est.', 'Registros']
-                st.dataframe(seasonal_display, use_container_width=True, hide_index=True)
+            # Tabla de estacionalidad detallada
+            st.write("**Estadísticas Completas por Mes:**")
+            seasonal_display = seasonal_avg.copy()
+            seasonal_display['mean'] = seasonal_display['mean'].apply(lambda x: f"₡{x:,.0f}")
+            seasonal_display['std'] = seasonal_display['std'].apply(lambda x: f"₡{x:,.0f}")
+            seasonal_display['count'] = seasonal_display['count'].astype(int)
+            seasonal_display = seasonal_display[['mes_nombre', 'mean', 'std', 'count']]
+            seasonal_display.columns = ['Mes', 'Promedio', 'Desv. Est.', 'Registros']
+            st.dataframe(seasonal_display, use_container_width=True, hide_index=True)
 
         # ============ VOLATILIDAD ============
         if productos_seleccionados:
