@@ -1,6 +1,8 @@
 # Análisis de Precios Agrícolas - CNP
 
 > **Un análisis visual e interactivo de 4 años de datos históricos (2021-2024) del Consejo Nacional de Producción.**
+> 
+> 🚀 **Deployado en Vercel con Docker** - Acceso inmediato sin configuraciones
 
 ## Acerca de Este Proyecto
 
