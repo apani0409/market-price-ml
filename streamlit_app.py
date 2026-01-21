@@ -184,9 +184,6 @@ try:
                 mime="text/csv"
             )
 
-        # ============ DETECCIÓN DE ANOMALÍAS ============
-        if productos_seleccionados:
-
         # ============ ANÁLISIS DE ESTACIONALIDAD ============
         if productos_seleccionados and len(df_filtered) > 30:
             st.markdown("---")
