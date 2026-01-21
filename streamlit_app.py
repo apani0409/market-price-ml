@@ -9,7 +9,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
 import numpy as np
-from scipy import stats
 
 
 # Configuración de la página
@@ -187,37 +186,6 @@ try:
 
         # ============ DETECCIÓN DE ANOMALÍAS ============
         if productos_seleccionados:
-            st.markdown("---")
-            st.subheader("🔴 Detección de Anomalías (Z-Score)")
-            
-            # Calcular anomalías por producto
-            anomalies_data = []
-            
-            for producto in productos_seleccionados:
-                df_producto = df_filtered[df_filtered['variety'] == producto].copy()
-                
-                if len(df_producto) > 3:  # Necesitamos al menos 4 puntos
-                    prices = df_producto['price'].values
-                    z_scores = np.abs(stats.zscore(prices))
-                    
-                    # Anomalías con z-score > 2.5
-                    anomaly_indices = np.where(z_scores > 2.5)[0]
-                    
-                    if len(anomaly_indices) > 0:
-                        for idx in anomaly_indices:
-                            anomalies_data.append({
-                                'Producto': producto,
-                                'Fecha': df_producto.iloc[idx]['publication_date'].strftime('%Y-%m-%d'),
-                                'Precio': f"₡{df_producto.iloc[idx]['price']:,.0f}",
-                                'Z-Score': f"{z_scores[idx]:.2f}"
-                            })
-            
-            if anomalies_data:
-                df_anomalies = pd.DataFrame(anomalies_data)
-                st.warning(f"⚠️ Se encontraron {len(df_anomalies)} anomalías en los precios")
-                st.dataframe(df_anomalies, use_container_width=True)
-            else:
-                st.success("✅ No se detectaron anomalías significativas")
 
         # ============ ANÁLISIS DE ESTACIONALIDAD ============
         if productos_seleccionados and len(df_filtered) > 30:
