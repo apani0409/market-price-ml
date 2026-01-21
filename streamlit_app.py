@@ -292,6 +292,7 @@ except Exception as e:
 st.markdown("---")
 st.markdown("""
 <div style='text-align: center; color: gray; font-size: 0.9em;'>
-    Dashboard de Precios Agrícolas | Datos reales sin procesamiento ML
+    Dashboard de Precios Agrícolas recomendados por el Consejo Nacional de Producción (CNP) <br>
+    Colaboración entre la Universidad de Costa Rica y The Food and Agriculture Organization of the United Nations
 </div>
 """, unsafe_allow_html=True)
