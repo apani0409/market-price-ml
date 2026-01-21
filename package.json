@@ -4,6 +4,6 @@
   "description": "Agricultural price analysis dashboard",
   "private": true,
   "engines": {
-    "node": "18"
+    "node": "24.x"
   }
 }
